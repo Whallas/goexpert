@@ -1,0 +1,9 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - WEATHER_PROVIDER=${WEATHER_PROVIDER:-openmeteo}
+      - WEATHER_API_KEY=${WEATHER_API_KEY:-}
