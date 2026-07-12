@@ -1,0 +1,41 @@
+services:
+  app:
+    build: .
+    container_name: rate-limiter-app
+    ports:
+      - "8080:8080"
+    environment:
+      SERVER_PORT: 8080
+      REDIS_ADDR: redis:6379
+      REDIS_PASSWORD: ""
+      REDIS_DB: 0
+      IP_RATE_LIMIT: 10
+      TOKEN_RATE_LIMIT: 100
+      TOKEN_LIMITS: "abc123:100,premium:1000"
+      BLOCK_DURATION_SECONDS: 300
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  redis:
+    image: redis:7-alpine
+    container_name: rate-limiter-redis
+    # No host port published: only the app reaches Redis, over the compose
+    # network. Avoids clashing with a Redis already running on the host.
+    expose:
+      - "6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # One-shot test runner: `docker compose run --rm test`
+  test:
+    image: golang:1.22-alpine
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: go test ./...
+    profiles:
+      - test
