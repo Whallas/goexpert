@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = "github.com/Whallas/goexpert/Desafios/clean-architecture/internal/infra/grpc/pb";
+
+service OrderService {
+  rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse);
+  rpc ListOrders(ListOrdersRequest) returns (ListOrdersResponse);
+}
+
+message CreateOrderRequest {
+  double price = 1;
+  double tax = 2;
+}
+
+message CreateOrderResponse {
+  string id = 1;
+  double price = 2;
+  double tax = 3;
+  double final_price = 4;
+}
+
+message ListOrdersRequest {}
+
+message ListOrdersResponse {
+  repeated CreateOrderResponse orders = 1;
+}
